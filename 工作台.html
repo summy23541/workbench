@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<!-- saved from url=(0078)file:///C:/Users/hh136/Documents/deepseek-harness/default-workspace/index.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>工作台</title>
+<style>
+  :root{
+    --bg:#FAF9F5;
+    --side:#F6F4EE;
+    --rail:#FBFAF7;
+    --surface:#FFFFFF;
+    --ink:#1B1B18;
+    --ink2:#5B5B54;
+    --ink3:#9A998F;
+    --line:#E9E6DD;
+    --line2:#D5D2C7;
+    --accent:#2C6E63;
+    --accent-soft:#E9F0EE;
+    --danger:#B4553F;
+    --hover:#F4F2EB;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC","Hiragino Sans GB",sans-serif;
+    font-size:14px;color:var(--ink);background:var(--bg);
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    min-width:1024px;
+  }
+  button{font-family:inherit;color:inherit}
+  input{font-family:inherit}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#DEDACE;border-radius:6px;border:3px solid transparent;background-clip:content-box}
+  ::-webkit-scrollbar-thumb:hover{background:#CBC6B7;border:3px solid transparent;background-clip:content-box}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .app{display:grid;grid-template-columns:224px minmax(0,1fr) 308px;height:100vh;overflow:hidden}
+
+  /* ---------- sidebar ---------- */
+  .side{
+    background:var(--side);border-right:1px solid var(--line);
+    padding:22px 14px 16px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;
+  }
+  .brand{padding:0 10px 16px;display:flex;align-items:baseline;gap:7px}
+  .brand b{font-size:15px;font-weight:650;letter-spacing:.01em}
+  .brand span{font-size:11px;color:var(--ink3);letter-spacing:.06em}
+  .nav-item{
+    display:flex;align-items:center;gap:8px;width:100%;
+    height:32px;padding:0 10px;border:0;border-radius:7px;background:none;
+    font-size:13.5px;color:var(--ink2);cursor:pointer;text-align:left;
+    transition:background .12s ease,color .12s ease;
+  }
+  .nav-item:hover{background:var(--hover)}
+  .nav-item.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .nav-item .ico{width:15px;height:15px;flex:none;opacity:.8}
+  .nav-item .count{margin-left:auto;font-size:11.5px;color:var(--ink3);font-variant-numeric:tabular-nums}
+  .nav-item.on .count{color:var(--accent);opacity:.75}
+  .sec{margin:20px 10px 7px;font-size:11px;color:var(--ink3);letter-spacing:.1em;display:flex;align-items:center;justify-content:space-between}
+  .sec button{border:0;background:none;color:var(--ink3);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;border-radius:4px}
+  .sec button:hover{color:var(--accent);background:var(--accent-soft)}
+  .proj .dot{width:7px;height:7px;border-radius:50%;flex:none}
+  .proj .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .proj .rm{
+    margin-left:auto;border:0;background:none;color:var(--ink3);cursor:pointer;
+    font-size:13px;line-height:1;padding:2px 3px;border-radius:4px;opacity:0;transition:opacity .12s
+  }
+  .proj:hover .rm{opacity:1}
+  .proj .rm:hover{color:var(--danger);background:#F3E7E2}
+  .proj .count{margin-left:auto}
+  .proj:hover .count{display:none}
+  .proj-input{
+    width:100%;height:30px;border:1px solid var(--line2);border-radius:7px;
+    background:#fff;padding:0 9px;font-size:13px;outline:none
+  }
+  .proj-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .side-foot{margin-top:auto;padding-top:14px}
+  .ghost-btn{
+    display:flex;align-items:center;gap:7px;width:100%;height:30px;padding:0 10px;
+    border:0;border-radius:7px;background:none;color:var(--ink3);font-size:12.5px;cursor:pointer
+  }
+  .ghost-btn:hover{background:var(--hover);color:var(--ink2)}
+  .settings-ver{margin-left:auto;font-style:normal;font-size:10.5px;letter-spacing:.04em;color:var(--ink3);opacity:.75}
+
+  .sync-dot{
+    width:6px;height:6px;border-radius:50%;flex:none;display:inline-block;
+    background:#B9B6AA;transition:background .2s
+  }
+  .sync-dot.ok{background:var(--accent)}
+  .sync-dot.off{background:#C9873E}
+  .sync-dot.local{background:#C4C1B6}
+
+  /* ---------- 手机 ---------- */
+  .mobilebar{display:none}
+
+  /* ---------- main ---------- */
+  .main{overflow-y:auto;padding:30px 36px 90px}
+  .main-in{max-width:660px;margin:0 auto}
+  .head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px}
+  .weeknav{display:flex;align-items:center;gap:4px;padding-bottom:2px}
+  .weeknav button{
+    height:27px;min-width:27px;padding:0 8px;border:1px solid var(--line);background:#fff;
+    border-radius:6px;font-size:12.5px;color:var(--ink2);cursor:pointer;
+    transition:background .12s,border-color .12s,color .12s;
+  }
+  .weeknav button:hover{background:var(--hover);border-color:var(--line2)}
+  .weeknav button.on{background:var(--accent-soft);border-color:var(--accent-soft);color:var(--accent);font-weight:600}
+  h1{margin:0;font-size:21px;font-weight:650;letter-spacing:-.01em}
+  .sub{margin-top:5px;font-size:12.5px;color:var(--ink3)}
+  .add{
+    margin-top:22px;display:flex;align-items:center;gap:9px;
+    height:42px;padding:0 13px;background:var(--surface);
+    border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 1px 2px rgba(40,35,20,.03);
+    transition:border-color .15s,box-shadow .15s;
+  }
+  .add:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .add .plus{color:var(--ink3);font-size:16px;line-height:1;flex:none}
+  .add input{flex:1;border:0;outline:0;background:none;font-size:13.5px;color:var(--ink);height:100%}
+  .add input::placeholder{color:var(--ink3)}
+  .add .enter{font-size:11px;color:var(--ink3);border:1px solid var(--line);border-radius:5px;padding:1px 5px;flex:none}
+
+  .group-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin:26px 0 6px;padding:0 10px 0 9px;
+    font-size:11px;color:var(--ink3);letter-spacing:.08em;
+  }
+  .group-head .n{font-variant-numeric:tabular-nums;letter-spacing:0}
+
+  .task{
+    display:flex;align-items:center;gap:10px;padding:9px 9px 9px 6px;
+    border-radius:8px;position:relative;transition:background .12s ease;
+  }
+  .task:hover{background:var(--hover)}
+  .task.done{opacity:.72}
+  .check{
+    flex:none;width:18px;height:18px;border-radius:50%;
+    border:1.5px solid var(--line2);background:#fff;cursor:pointer;padding:0;
+    display:flex;align-items:center;justify-content:center;
+    transition:border-color .15s,background .15s;
+  }
+  .check:hover{border-color:var(--accent)}
+  .check svg{opacity:0;transform:scale(.6);transition:opacity .12s,transform .12s}
+  .task.done .check{background:var(--accent);border-color:var(--accent)}
+  .task.done .check svg{opacity:1;transform:scale(1)}
+  .t-title{font-size:14px;line-height:1.5;flex:1;min-width:0;word-break:break-word;cursor:text}
+  .task.done .t-title{color:var(--ink3);text-decoration:line-through;text-decoration-color:#CFCCBF}
+  .t-meta{display:flex;align-items:center;gap:7px;flex:none}
+  .chip{
+    font-size:11px;color:var(--ink2);background:#F0EEE6;border-radius:5px;
+    padding:1.5px 6px;white-space:nowrap;border:0;cursor:pointer
+  }
+  .chip.date:hover{background:#E7E4DA}
+  .chip.date.fade{opacity:0;transition:opacity .12s}
+  .task:hover .chip.date.fade{opacity:1}
+  .chip.over{background:#F8E9E3;color:var(--danger)}
+  .chip.proj{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+  .chip.proj:hover{background:#E7E4DA}
+  .chip.proj i{width:6px;height:6px;border-radius:50%;display:block}
+  .chip.proj.empty-holder{opacity:0;color:var(--ink3);background:transparent;border:1px dashed var(--line2)}
+  .task:hover .chip.proj.empty-holder{opacity:1}
+  .prio{
+    width:14px;height:18px;flex:none;border:0;background:none;padding:0;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;border-radius:4px;margin-right:-3px
+  }
+  .prio i{width:8px;height:8px;border-radius:50%;display:block;transition:transform .12s,opacity .12s;opacity:.9}
+  .prio:hover i{transform:scale(1.3);opacity:1}
+  .del{
+    width:22px;height:22px;border:0;background:none;padding:0;cursor:pointer;
+    color:var(--ink3);border-radius:5px;font-size:15px;line-height:1;
+    opacity:0;transition:opacity .12s,color .12s,background .12s
+  }
+  .task:hover .del{opacity:1}
+  .del:hover{color:var(--danger);background:#F3E7E2}
+  .inline-edit{
+    flex:1;min-width:0;font-size:14px;padding:1px 6px;border:1px solid var(--accent);
+    border-radius:6px;outline:none;background:#fff;box-shadow:0 0 0 3px var(--accent-soft)
+  }
+
+  .day-add{
+    display:flex;align-items:center;gap:6px;width:100%;height:30px;
+    padding:0 10px 0 9px;border:0;background:none;border-radius:7px;
+    color:var(--ink3);font-size:12.5px;cursor:pointer;text-align:left;
+    opacity:.7;transition:opacity .12s,background .12s,color .12s;
+  }
+  .day-add:hover{background:var(--hover);color:var(--accent);opacity:1}
+  .day-add b{font-size:14px;font-weight:400;line-height:1}
+  .inline-add{
+    width:100%;height:33px;margin:1px 0;padding:0 10px;font-size:13.5px;
+    border:1px solid var(--accent);border-radius:7px;background:#fff;outline:none;
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .inline-add::placeholder{color:var(--ink3)}
+  .empty{text-align:center;padding:52px 0 40px;color:var(--ink3)}  .empty .t{font-size:14px;color:var(--ink2);margin-bottom:6px}
+  .empty .s{font-size:12.5px;line-height:1.7}
+
+  /* ---------- rail ---------- */
+  .rail{background:var(--rail);border-left:1px solid var(--line);padding:24px 18px;overflow-y:auto}
+  .card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:16px;box-shadow:0 1px 2px rgba(40,35,20,.03);
+  }
+  .card+.card{margin-top:13px}
+  .card-label{font-size:10.5px;letter-spacing:.12em;color:var(--ink3);margin-bottom:10px}
+  .big-date{font-size:23px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+  .big-date em{font-style:normal;font-size:12.5px;font-weight:400;color:var(--ink3);margin-left:7px}
+  .bar{height:4px;border-radius:2px;background:#EDEAE0;overflow:hidden;margin:14px 0 9px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:2px;transition:width .35s ease}
+  .row-between{display:flex;align-items:baseline;justify-content:space-between;font-size:12px;color:var(--ink2)}
+  .row-between b{font-weight:600;font-variant-numeric:tabular-nums}
+  .muted-line{margin-top:9px;font-size:11.5px;color:var(--ink3);line-height:1.6}
+
+  .digits{
+    font-size:42px;font-weight:300;letter-spacing:-.01em;line-height:1.05;
+    font-variant-numeric:tabular-nums;margin:2px 0 14px;
+  }
+  .digits.break-mode{color:var(--accent)}
+  .timer-btns{display:flex;gap:8px}
+  .btn{
+    flex:1;height:34px;border-radius:8px;border:1px solid var(--line2);background:#fff;
+    font-size:12.5px;cursor:pointer;transition:background .12s,border-color .12s,color .12s
+  }
+  .btn:hover{background:#F7F5EF}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+  .btn.primary:hover{background:#255D54;border-color:#255D54}
+  .btn.sm{flex:none;width:auto;padding:0 10px;height:34px;color:var(--ink2)}
+  .t-select{
+    width:100%;height:32px;margin-top:12px;padding:0 26px 0 8px;font-size:12.5px;color:var(--ink2);
+    border:1px solid var(--line);border-radius:7px;outline:none;cursor:pointer;
+    appearance:none;-webkit-appearance:none;
+    background:#fff url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='6'%20viewBox='0%200%2010%206'%3E%3Cpath%20d='M1%201l4%204%204-4'%20fill='none'%20stroke='%239A998F'%20stroke-width='1.4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 9px center;
+  }
+  .t-select:disabled{color:var(--ink3);background:#F8F7F2;cursor:default}
+
+  /* ---------- 弹窗 ---------- */
+  .modal-mask{
+    position:fixed;inset:0;background:rgba(30,28,22,.28);z-index:80;
+    display:none;align-items:flex-start;justify-content:center;padding:6vh 16px;
+  }
+  .modal-mask.show{display:flex}
+  .modal{
+    width:min(560px,100%);max-height:88vh;overflow-y:auto;background:var(--surface);
+    border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 24px 60px rgba(30,28,22,.22);padding:22px 24px 20px;
+  }
+  .modal h2{margin:0 0 4px;font-size:16px;font-weight:650}
+  .modal .hint{font-size:12px;color:var(--ink3);line-height:1.7;margin:0 0 16px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-size:12px;color:var(--ink2);margin-bottom:6px}
+  .field input[type=text],.field input[type=password],.field select{
+    width:100%;height:36px;padding:0 10px;font-size:13.5px;color:var(--ink);
+    border:1px solid var(--line2);border-radius:8px;background:#fff;outline:none;
+  }
+  .field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .field .tip{font-size:11.5px;color:var(--ink3);margin-top:6px;line-height:1.6}
+  .field .tip a{color:var(--accent)}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+  .modal-actions .btn{flex:none;min-width:88px;padding:0 14px}
+  .modal .status{
+    margin-top:12px;font-size:12px;line-height:1.7;border-radius:8px;padding:9px 11px;
+    background:#F7F5EF;color:var(--ink2);word-break:break-all
+  }
+  .modal .status.ok{background:var(--accent-soft);color:var(--accent)}
+  .modal .status.bad{background:#FBEDE8;color:var(--danger)}
+  .radio-row{display:flex;gap:8px;flex-wrap:wrap}
+  .radio-row button{
+    flex:1;min-width:120px;height:52px;padding:8px 10px;text-align:left;cursor:pointer;
+    border:1px solid var(--line2);border-radius:9px;background:#fff;font-size:12.5px;color:var(--ink2);
+    transition:border-color .12s,background .12s
+  }
+  .radio-row button b{display:block;font-size:13px;color:var(--ink);margin-bottom:2px;font-weight:600}
+  .radio-row button.on{border-color:var(--accent);background:var(--accent-soft)}
+  .radio-row button.on b{color:var(--accent)}
+  .popover{
+    position:fixed;z-index:60;display:none;min-width:168px;padding:6px;
+    background:#fff;border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 10px 30px rgba(40,35,20,.12),0 2px 6px rgba(40,35,20,.06);
+  }
+  .popover.show{display:block}
+  .popover .pl{font-size:10.5px;color:var(--ink3);letter-spacing:.1em;padding:5px 8px 7px}
+  .popover button{
+    display:block;width:100%;text-align:left;border:0;background:none;
+    padding:7px 8px;border-radius:6px;font-size:13px;color:var(--ink);cursor:pointer
+  }
+  .popover button:hover{background:var(--hover)}
+  .popover button .pdot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:7px;vertical-align:middle}
+  .popover button.danger{color:var(--danger)}
+  .popover .sep{height:1px;background:var(--line);margin:5px 6px}
+  .popover input[type=date]{
+    width:100%;margin:5px 0 2px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;
+    font-size:12.5px;color:var(--ink2);outline:none;background:#FAF9F5
+  }
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);
+    background:#22221F;color:#F5F3EC;font-size:12.5px;border-radius:9px;
+    padding:10px 14px;display:flex;align-items:center;gap:14px;z-index:70;
+    opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);max-width:80vw
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+  .toast button{border:0;background:none;color:#9BD8C9;font-size:12.5px;cursor:pointer;padding:0;font-weight:600}
+  .toast span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .errbar{
+    position:fixed;left:0;right:0;bottom:0;background:#B4553F;color:#fff;
+    font-size:12px;padding:8px 12px;z-index:99;font-family:Consolas,monospace
+  }
+  .warn{
+    background:#FBF3E6;border:1px solid #EFDFC2;color:#8A6A2F;border-radius:9px;
+    padding:10px 12px;font-size:12px;line-height:1.6;margin-top:13px
+  }
+
+  /* ================= 手机布局(必须放在最后,以覆盖上面的基础样式) ================= */
+  @media (max-width: 900px){
+    body{min-width:0}
+    .mobilebar{
+      display:flex;align-items:center;gap:8px;
+      position:sticky;top:0;z-index:40;
+      padding:9px 12px;background:var(--bg);
+      border-bottom:1px solid var(--line);
+    }
+    .mobilebar select{
+      flex:1;min-width:0;height:34px;padding:0 30px 0 10px;font-size:14px;color:var(--ink);
+      border:1px solid var(--line2);border-radius:8px;outline:none;
+      appearance:none;-webkit-appearance:none;
+      background:#fff url("data:image/svg+xml;charset=utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='10'%20height='6'%20viewBox='0%200%2010%206'%3E%3Cpath%20d='M1%201l4%204%204-4'%20fill='none'%20stroke='%239A998F'%20stroke-width='1.4'%20stroke-linecap='round'%20stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
+    }
+    .mobilebar button{
+      width:34px;height:34px;flex:none;border:1px solid var(--line2);border-radius:8px;
+      background:#fff;color:var(--ink2);font-size:15px;line-height:1;cursor:pointer
+    }
+    .app{display:block;height:auto;min-height:0;overflow:visible}
+    .side{display:none}
+    .main{padding:16px 12px 26px;overflow:visible;height:auto}
+    .main-in{max-width:none}
+    h1{font-size:19px}
+    .rail{
+      display:block;border-left:0;border-top:1px solid var(--line);
+      padding:14px 12px 28px;overflow:visible;
+    }
+    .rail .card+.card{margin-top:11px}
+    .add{height:44px;margin-top:16px}
+    .add .enter{display:none}
+    .add input{font-size:16px}
+    .inline-add{font-size:16px}
+    .popover input[type=date]{font-size:16px}
+    .t-select{font-size:16px}
+    .mobilebar select{font-size:16px}
+    .chip{font-size:11.5px;padding:2px 6px}
+    .task{padding:11px 6px;gap:8px}
+    .t-title{font-size:15px}
+    button{touch-action:manipulation}
+    .del{opacity:1}
+    .chip.date.fade{opacity:1}
+    .chip.proj.empty-holder{opacity:1}
+    .day-add{height:36px;font-size:13px;opacity:1}
+    .inline-add{height:40px;font-size:15px}
+    .btn{height:40px;font-size:13px}
+    .btn.sm{height:40px}
+    .digits{font-size:38px}
+    .weeknav button{height:32px;min-width:32px}
+    .popover{min-width:200px}
+    .popover button{padding:11px 10px;font-size:14.5px}
+    .popover input[type=date]{padding:9px 10px;font-size:14px}
+    .toast{left:12px;right:12px;transform:translate(0,14px);max-width:none}
+    .toast.show{transform:translate(0,0)}
+    .group-head{margin:22px 0 6px}
+  }
+</style>
+</head>
+<body>
+<div class="mobilebar">
+  <select id="mView" aria-label="切换视图"><option value="today">今天</option><option value="week">本周</option><option value="inbox">收件箱</option><option value="done">已完成</option><optgroup label="项目"><option value="p:mwnj1r2pqm73h">工作</option><option value="p:mwnj1r2prn5g0">学习</option><option value="p:mwnj1r2p73yod">生活</option></optgroup></select>
+  <button id="mSettings" title="设置与备份">⋯</button>
+  <span class="sync-dot ok" data-sync="" title="云同步:Gitee 代码片段 · 已同步"></span>
+</div>
+<div class="app">
+  <aside class="side">
+    <div class="brand"><b>工作台</b><span>PERSONAL</span></div>
+    <button class="nav-item" data-view="today">
+      <svg class="ico" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="7" r="4.7"></circle><circle cx="7" cy="7" r="1.1" fill="currentColor" stroke="none"></circle></svg>
+      今天<span class="count" id="c-today">3</span>
+    </button>
+    <button class="nav-item" data-view="week">
+      <svg class="ico" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"><rect x="2" y="3.2" width="10" height="8.8" rx="1.6"></rect><path d="M2 6.2h10M5 1.8v2.6M9 1.8v2.6"></path></svg>
+      本周<span class="count" id="c-week"></span>
+    </button>
+    <button class="nav-item" data-view="inbox">
+      <svg class="ico" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"><path d="M1.9 8.1h2.8l1 1.7h2.6l1-1.7h2.8"></path><path d="M3.3 2.5h7.4l1.6 5.6v3.3H1.7V8.1z"></path></svg>
+      收件箱<span class="count" id="c-inbox"></span>
+    </button>
+    <button class="nav-item" data-view="done">
+      <svg class="ico" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="7" r="4.8"></circle><path d="M4.6 7.1l1.7 1.7 3.2-3.4"></path></svg>
+      已完成<span class="count" id="c-done"></span>
+    </button>
+    <div class="sec"><span>项目</span><button id="btnAddProj" title="新建项目">＋</button></div>
+    <div id="projList"><button class="nav-item proj" data-project="mwnj1r2pqm73h"><span class="dot" style="background:#2C6E63"></span><span class="nm">工作</span><span class="count"></span><span class="rm" data-rm="mwnj1r2pqm73h" title="删除项目">×</span></button><button class="nav-item proj" data-project="mwnj1r2prn5g0"><span class="dot" style="background:#8A6A3B"></span><span class="nm">学习</span><span class="count"></span><span class="rm" data-rm="mwnj1r2prn5g0" title="删除项目">×</span></button><button class="nav-item proj on" data-project="mwnj1r2p73yod"><span class="dot" style="background:#5A5A8C"></span><span class="nm">生活</span><span class="count"></span><span class="rm" data-rm="mwnj1r2p73yod" title="删除项目">×</span></button></div>
+    <div class="side-foot">
+      <button class="ghost-btn" id="btnSettings"><span>⋯ 设置与备份</span><em class="settings-ver">v4</em><span class="sync-dot ok" data-sync="" title="云同步:Gitee 代码片段 · 已同步"></span></button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="main-in">
+      <div class="head">
+        <div>
+          <h1 id="viewTitle">生活</h1>
+          <div class="sub" id="viewSub">0 件未完成 · 共 0 件</div>
+        </div>
+        <div class="weeknav" id="weekNav" style="display:none">
+          <button data-week="-1" title="上一周">‹</button>
+          <button data-week="0" title="回到本周" class="on">本周</button>
+          <button data-week="1" title="下一周">›</button>
+        </div>
+      </div>
+      <form class="add" id="addForm" autocomplete="off" style="display: flex;">
+        <span class="plus">＋</span>
+        <input id="addInput" type="text" placeholder="添加到「生活」,回车确认" maxlength="200">
+        <span class="enter">Enter</span>
+      </form>
+      <div id="taskList"><div class="empty"><div class="t">这个项目还没有任务</div><div class="s">在上面的输入框里写下第一件事,回车就能加进来。</div></div></div>
+    </div>
+  </main>
+
+  <aside class="rail">
+    <div class="card">
+      <div class="card-label">今天</div>
+      <div class="big-date" id="railDate">11月20日<em>周五</em></div>
+      <div class="bar"><i id="railBar" style="width:0%"></i></div>
+      <div class="row-between"><span id="railLeft">还剩 3 件</span><b id="railRatio">0/3</b></div>
+      <div class="muted-line" id="railNote">本周已完成 0 件</div>
+    </div>
+
+    <div class="card">
+      <div class="card-label" id="tMode">专注 · 25 分钟</div>
+      <div class="digits" id="tDigits">25:00</div>
+      <div class="timer-btns">
+        <button class="btn primary" id="tBtn">开始</button>
+        <button class="btn sm" id="tSkip" title="跳到下一个阶段">跳过</button>
+        <button class="btn sm" id="tReset" title="重置本阶段">重置</button>
+      </div>
+      <select class="t-select" id="tTask"><option value="">不关联任务</option><option value="mwnjvqio54pxn">复习单元核心单词15min</option><option value="mwnjy30o2eure">完成MOOC第五单元测验</option><option value="mwnjykk95a6t9">完成一个番茄专注</option></select>
+      <div class="muted-line" id="tStat">今天 0 个番茄 · 0 分钟专注</div>
+    </div>
+
+    <div class="warn" id="warnBox" style="display:none">
+      当前浏览器不允许本地存储,数据不会被保存。请用 Edge / Chrome 打开本文件。
+    </div>
+  </aside>
+</div>
+
+<div class="popover" id="popover" style="left: 14px; top: 372px;"></div>
+<div class="toast" id="toast"><span id="toastMsg">云同步已开启</span><button id="toastBtn" style="display:none"></button></div>
+<div class="modal-mask" id="modalMask">
+  <div class="modal" id="modalBox"></div>
+</div>
+<input type="file" id="importFile" accept=".json,application/json" hidden="">
+
+<script>
+(function(){
+'use strict';
+
+window.onerror = function(m, s, l, c){
+  var d = document.createElement('div');
+  d.className = 'errbar';
+  d.textContent = '脚本错误: ' + m + '  (' + l + ':' + c + ')';
+  document.body.appendChild(d);
+};
+
+/* ============ 常量 & 工具 ============ */
+var KEY = 'dsh-workbench-v1';
+var FO = 25 * 60, BR = 5 * 60;
+var P_CLR = ['#2C6E63','#8A6A3B','#5A5A8C','#7A4A4A','#3F6B8C','#6B7A3F','#8C5A7A'];
+var PRIO = {1:'#C0562F', 2:'#C79A3E', 3:'#C4C1B6'};
+var PRIO_NAME = {1:'高', 2:'中', 3:'低'};
+
+function $(s, r){ return (r||document).querySelector(s); }
+function pad(n){ return n < 10 ? '0' + n : '' + n; }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function esc(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function ymd(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+function todayKey(){ return ymd(new Date()); }
+function parseKey(k){ var p = k.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function addDays(k, n){ var d = parseKey(k); d.setDate(d.getDate() + n); return ymd(d); }
+function startOfWeek(k){
+  var d = parseKey(k);
+  var w = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - w);
+  return ymd(d);
+}
+var WD = ['周一','周二','周三','周四','周五','周六','周日'];
+function weekdayOf(k){ return WD[(parseKey(k).getDay() + 6) % 7]; }
+function mdLabel(k){ var d = parseKey(k); return (d.getMonth() + 1) + '月' + d.getDate() + '日'; }
+function dayLabel(k){
+  var t = todayKey();
+  if (k === t) return '今天';
+  if (k === addDays(t, 1)) return '明天';
+  if (k === addDays(t, 2)) return '后天';
+  if (k === addDays(t, -1)) return '昨天';
+  var d = parseKey(k);
+  return (d.getFullYear() !== new Date().getFullYear() ? d.getFullYear() + '年' : '') + mdLabel(k);
+}
+function dateGroupLabel(k){ return dayLabel(k) + ' · ' + weekdayOf(k); }
+function fmtClock(sec){
+  sec = Math.max(0, Math.round(sec));
+  return pad(Math.floor(sec / 60)) + ':' + pad(sec % 60);
+}
+
+/* ============ 同步:多后端 ============ */
+var storageOK = true;
+try{ localStorage.setItem('__wb_t','1'); localStorage.removeItem('__wb_t'); }
+catch(e){ storageOK = false; }
+
+var CLOUD_KEY = 'dsh-workbench-cloud-v1';
+var SERVED = (location.protocol === 'http:' || location.protocol === 'https:');
+var cloud = { provider:'', token:'', id:'', url:'', user:'' };
+try{ var c0 = JSON.parse(localStorage.getItem(CLOUD_KEY) || '{}'); if (c0 && c0.provider) cloud = c0; }catch(e){}
+
+var MODE = 'offline';    // 'lan' | 'cloud' | 'offline'
+var backend = null;
+var rev = 0;
+var inFlight = false;
+var dirty = false;
+
+function loadState(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if (!raw) return null;
+    var s = JSON.parse(raw);
+    if (!s || !Array.isArray(s.tasks) || !Array.isArray(s.projects)) return null;
+    s.sessions = s.sessions || {};
+    s.ui = s.ui || { view:'today', projectId:null };
+    return s;
+  }catch(e){ return null; }
+}
+function mirror(){
+  try{ localStorage.setItem(KEY, JSON.stringify(state)); }
+  catch(e){ storageOK = false; }
+}
+function saveCloud(){
+  try{ localStorage.setItem(CLOUD_KEY, JSON.stringify(cloud)); }catch(e){}
+}
+function save(){
+  if (state) state.updatedAt = Date.now();
+  mirror();
+  if (!storageOK && MODE === 'offline') showWarn();
+  if (MODE === 'offline' || !backend) return;
+  dirty = true;
+  if (!inFlight) flush();
+}
+function showWarn(){
+  $('#warnBox').style.display = (storageOK || MODE !== 'offline') ? 'none' : 'block';
+}
+function syncLabel(){
+  if (MODE === 'none' || MODE === 'offline') return '离线单机模式:数据只在这台设备的浏览器里';
+  if (MODE === 'lan') return '局域网同步:' + location.host;
+  if (MODE === 'cloud') return '云同步:' + (backend ? backend.label : '');
+  return '';
+}
+function setSyncUI(ok){
+  var dots = document.querySelectorAll('[data-sync]');
+  for (var i = 0; i < dots.length; i++){
+    var d = dots[i];
+    var cls = 'sync-dot';
+    if (MODE === 'offline') cls += ' local';
+    else cls += ok ? ' ok' : ' off';
+    d.className = cls;
+    d.title = MODE === 'offline'
+      ? syncLabel()
+      : (ok ? syncLabel() + ' · 已同步' : '与服务器断开,改动暂存本机,恢复后自动补发');
+  }
+}
+
+/* ---------- 后端:局域网(server.py) ---------- */
+var LanBackend = {
+  label: '这台电脑上的服务',
+  test: function(){
+    return fetch('api/ping', { cache:'no-store' }).then(function(r){ return r.ok; });
+  },
+  read: function(){
+    return fetch('api/state', { cache:'no-store' }).then(function(r){ return r.json(); })
+      .then(function(j){ return { rev: j.rev || 0, env: j }; });
+  },
+  write: function(env){
+    return fetch('api/state', {
+      method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ state: env.state })
+    }).then(function(r){ return r.json(); }).then(function(j){ return { rev: j.rev || 0 }; });
+  }
+};
+
+/* ---------- 后端:GitHub Gist ---------- */
+var GIST_FILE = 'workbench.json';
+var GistBackend = {
+  label: 'GitHub Gist',
+  test: function(){
+    if (!cloud.token) return Promise.reject(new Error('没有填写令牌'));
+    return fetch('https://api.github.com/gists' + (cloud.id ? '/' + cloud.id : ''), {
+      headers: ghHeaders()
+    }).then(function(r){
+      if (!r.ok) throw new Error('GitHub 返回 ' + r.status + (r.status === 401 ? '(令牌无效)' : ''));
+      return true;
+    });
+  },
+  read: function(){
+    return fetch('https://api.github.com/gists/' + cloud.id, { headers: ghHeaders(), cache:'no-store' })
+      .then(function(r){
+        if (!r.ok) throw new Error('读取失败 HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(g){
+        var f = g.files && g.files[GIST_FILE];
+        if (!f) return { rev: 0, env: null };
+        var content = f.content;
+        if (f.truncated && f.raw_url){
+          return fetch(f.raw_url, { cache:'no-store' }).then(function(r){ return r.text(); })
+            .then(function(txt){ return parseEnv(txt); });
+        }
+        return parseEnv(content);
+      });
+  },
+  write: function(env){
+    var body = { files: {} };
+    body.files[GIST_FILE] = { content: JSON.stringify(env) };
+    var url = cloud.id
+      ? 'https://api.github.com/gists/' + cloud.id
+      : 'https://api.github.com/gists';
+    if (!cloud.id){
+      body.description = '工作台数据(自动同步)';
+      body.public = false;
+    }
+    return fetch(url, {
+      method: cloud.id ? 'PATCH' : 'POST',
+      headers: ghHeaders(),
+      body: JSON.stringify(body)
+    }).then(function(r){
+      if (!r.ok) throw new Error('写入失败 HTTP ' + r.status);
+      return r.json();
+    }).then(function(g){
+      if (!cloud.id && g.id){ cloud.id = g.id; saveCloud(); }
+      return { rev: env.rev };
+    });
+  }
+};
+function ghHeaders(){
+  return {
+    'Authorization': 'token ' + (cloud.token || ''),
+    'Accept': 'application/vnd.github+json',
+    'Content-Type': 'application/json'
+  };
+}
+function parseEnv(txt){
+  try{
+    var env = JSON.parse(txt);
+    if (env && env.state && Array.isArray(env.state.tasks)) return { rev: env.rev || 0, env: env };
+    if (env && Array.isArray(env.tasks)) return { rev: env.rev || 0, env: { rev: env.rev || 0, state: env } };
+  }catch(e){}
+  return { rev: 0, env: null };
+}
+
+/* ---------- 后端:Gitee 代码片段 ---------- */
+var GiteeBackend = {
+  label: 'Gitee 代码片段',
+  test: function(){
+    if (!cloud.token) return Promise.reject(new Error('没有填写令牌'));
+    return fetch(giteeUrl(cloud.id ? '/gists/' + cloud.id : '/gists'), { cache:'no-store' })
+      .then(function(r){
+        if (!r.ok) throw new Error('Gitee 返回 ' + r.status);
+        return true;
+      });
+  },
+  read: function(){
+    return fetch(giteeUrl('/gists/' + cloud.id), { cache:'no-store' })
+      .then(function(r){
+        if (!r.ok) throw new Error('读取失败 HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(g){
+        var f = g.files && g.files[GIST_FILE];
+        return f ? parseEnv(f.content) : { rev: 0, env: null };
+      });
+  },
+  write: function(env){
+    var files = {}; files[GIST_FILE] = { content: JSON.stringify(env) };
+    var body = { files: files };
+    if (!cloud.id){ body.description = '工作台数据(自动同步)'; body.public = false; }
+    return fetch(giteeUrl(cloud.id ? '/gists/' + cloud.id : '/gists'), {
+      method: cloud.id ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(function(r){
+      if (!r.ok) throw new Error('写入失败 HTTP ' + r.status);
+      return r.json();
+    }).then(function(g){
+      if (!cloud.id && g.id){ cloud.id = g.id; saveCloud(); }
+      return { rev: env.rev };
+    });
+  }
+};
+function giteeUrl(path){
+  return 'https://gitee.com/api/v5' + path + '?access_token=' + encodeURIComponent(cloud.token || '');
+}
+
+/* ---------- 后端:自定义 HTTP 端点 ---------- */
+var HttpBackend = {
+  label: '自定义接口',
+  test: function(){
+    return fetch(cloud.url, { cache:'no-store', headers: httpHeaders() })
+      .then(function(r){
+        // 404 表示"还没有数据",这是正常状态,不算失败
+        if (r.status === 404 || r.ok) return true;
+        if (r.status === 401 || r.status === 403) throw new Error('没有权限 HTTP ' + r.status);
+        throw new Error('HTTP ' + r.status);
+      });
+  },
+  read: function(){
+    return fetch(cloud.url, { cache:'no-store', headers: httpHeaders() })
+      .then(function(r){
+        if (r.status === 404) return { rev: 0, env: null };
+        if (!r.ok) throw new Error('读取失败 HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function(t){ return typeof t === 'string' ? parseEnv(t) : t; });
+  },
+  write: function(env){
+    return fetch(cloud.url, {
+      method:'PUT', headers: httpHeaders(), body: JSON.stringify(env)
+    }).then(function(r){
+      if (!r.ok) throw new Error('写入失败 HTTP ' + r.status);
+      return { rev: env.rev };
+    });
+  }
+};
+function httpHeaders(){
+  var h = { 'Content-Type':'application/json' };
+  if (cloud.token) h['Authorization'] = 'Bearer ' + cloud.token;
+  return h;
+}
+
+function pickBackend(){
+  if (cloud.provider === 'gist'){ MODE = 'cloud'; return GistBackend; }
+  if (cloud.provider === 'gitee'){ MODE = 'cloud'; return GiteeBackend; }
+  if (cloud.provider === 'http' && cloud.url){ MODE = 'cloud'; return HttpBackend; }
+  if (SERVED){ MODE = 'lan'; return LanBackend; }
+  MODE = 'offline'; return null;
+}
+
+/* ---------- 同步动作 ---------- */
+function flush(){
+  if (!dirty || inFlight || !backend) return;
+  dirty = false;
+  inFlight = true;
+  var env = { rev: rev + 1, updatedAt: Date.now(), state: state };
+  backend.write(env).then(function(r){
+    inFlight = false;
+    if (r && typeof r.rev === 'number') rev = r.rev;
+    setSyncUI(true);
+    if (dirty) flush();
+  }).catch(function(err){
+    inFlight = false;
+    dirty = true;
+    setSyncUI(false);
+    if (window.__lastSyncErr !== String(err && err.message)){
+      window.__lastSyncErr = String(err && err.message);
+    }
+  });
+}
+
+function pullOnce(){
+  if (!backend) return Promise.resolve(false);
+  return backend.read().then(function(r){
+    setSyncUI(true);
+    if (!r.env || !r.env.state) return false;
+    if (r.rev > rev && Array.isArray(r.env.state.tasks)){
+      rev = r.rev;
+      var keepUI = state ? state.ui : null;
+      state = normalize(r.env.state);
+      if (keepUI) state.ui = keepUI;
+      mirror();
+      render();
+      return true;
+    }
+    return false;
+  }).catch(function(){ setSyncUI(false); return false; });
+}
+
+var pollTimer = null;
+function startPollOnce(){
+  if (pollTimer || !backend) return;
+  pollTimer = setInterval(function(){
+    if (!backend || document.hidden || inFlight) return;
+    var ae = document.activeElement;
+    if (ae && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT' || ae.isContentEditable)) return;
+    if (dirty){ flush(); return; }
+    pullOnce();
+  }, MODE === 'cloud' ? 20000 : 5000);
+}
+function stopPoll(){
+  if (pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+}
+
+/* 关页面/切后台时补发一次,避免"改完立刻关掉"丢数据 */
+function flushOnLeave(){
+  if (!backend || !dirty || !state) return;
+  var env = { rev: rev + 1, updatedAt: Date.now(), state: state };
+  if (MODE === 'lan' && navigator.sendBeacon){
+    try{
+      var blob = new Blob([JSON.stringify({ state: state })], { type:'application/json' });
+      if (navigator.sendBeacon('api/state', blob)){ dirty = false; return; }
+    }catch(e){}
+  }
+  try{
+    if (MODE === 'lan'){
+      fetch('api/state', { method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ state: state }), keepalive: true });
+      dirty = false;
+    } else if (backend && backend.write){
+      backend.write(env);
+      dirty = false;
+    }
+  }catch(e){}
+}
+window.addEventListener('pagehide', flushOnLeave);
+window.addEventListener('beforeunload', flushOnLeave);
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden) flushOnLeave();
+  else if (MODE !== 'offline' && dirty) flush();
+});
+
+/* ============ 种子数据 ============ */
+function mkTask(pid, title, date, prio){
+  return {
+    id: uid(), title: title, projectId: pid, date: date, priority: prio,
+    done: false, doneAt: null, createdAt: Date.now() - Math.floor(Math.random()*1000),
+    rolled: false, rollCount: 0, focusSec: 0
+  };
+}
+function seedState(){
+  var t = todayKey();
+  var ws = startOfWeek(t);
+  var wk = addDays(ws, 4);
+  if (wk < t) wk = t;
+  var p1 = { id: uid(), name: '工作', color: P_CLR[0] };
+  var p2 = { id: uid(), name: '学习', color: P_CLR[1] };
+  var p3 = { id: uid(), name: '生活', color: P_CLR[2] };
+  var tasks = [
+    mkTask(p1.id, '整理本周项目进度,产出一版周报', t, 1),
+    mkTask(p1.id, '把设计稿的交互标注补全', addDays(t, 1), 2),
+    mkTask(p1.id, '回复积压的邮件', t, 2),
+    mkTask(p2.id, '读书 30 分钟', t, 3),
+    mkTask(p2.id, '整理《重构》第 4 章笔记', wk, 2),
+    mkTask(p3.id, '预约体检', null, 2),
+    mkTask(p3.id, '买牛奶和咖啡豆', t, 3)
+  ];
+  var doneTask = mkTask(p1.id, '梳理下周要推进的三个重点', t, 2);
+  doneTask.done = true; doneTask.doneAt = Date.now() - 3600 * 1000;
+  tasks.push(doneTask);
+  return { v:1, projects:[p1,p2,p3], tasks:tasks, sessions:{}, ui:{ view:'today', projectId:null } };
+}
+
+/* ============ 状态 ============ */
+var state = null;
+var weekOffset = 0;   // 0 = 本周;-1 上周;1 下周……只在本次会话内有效
+
+function normalize(s){
+  s = s || {};
+  if (!Array.isArray(s.tasks)) s.tasks = [];
+  if (!Array.isArray(s.projects)) s.projects = [];
+  if (!s.sessions || typeof s.sessions !== 'object') s.sessions = {};
+  if (!s.ui || typeof s.ui !== 'object') s.ui = { view:'today', projectId:null };
+  if (!s.ui.view) s.ui.view = 'today';
+  return s;
+}
+
+function rollover(){
+  var t = todayKey(), changed = false;
+  state.tasks.forEach(function(x){
+    if (!x.done && x.date && x.date < t){
+      x.date = t; x.rolled = true; x.rollCount = (x.rollCount || 0) + 1; changed = true;
+    }
+  });
+  return changed;
+}
+
+function projById(id){
+  for (var i = 0; i < state.projects.length; i++) if (state.projects[i].id === id) return state.projects[i];
+  return null;
+}
+function taskById(id){
+  for (var i = 0; i < state.tasks.length; i++) if (state.tasks[i].id === id) return state.tasks[i];
+  return null;
+}
+function openToday(){ return state.tasks.filter(function(x){ return !x.done && x.date === todayKey(); }); }
+
+/* ============ 弹层 ============ */
+var pop = $('#popover');
+var popHandler = null;
+
+function closePopover(){ pop.classList.remove('show'); pop.innerHTML = ''; popHandler = null; }
+function openPopover(anchor, html, handler){
+  pop.innerHTML = html;
+  pop.classList.add('show');
+  pop.style.left = '0px'; pop.style.top = '0px';
+  var r = anchor.getBoundingClientRect();
+  var pw = pop.offsetWidth, ph = pop.offsetHeight;
+  var left = Math.min(r.left, window.innerWidth - pw - 12);
+  if (left < 12) left = 12;
+  var top = r.bottom + 6;
+  if (top + ph > window.innerHeight - 12) top = Math.max(12, r.top - ph - 6);
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+  popHandler = handler;
+}
+document.addEventListener('click', function(e){
+  if (!pop.classList.contains('show')) return;
+  if (pop.contains(e.target)) return;
+  if (e.target.closest && e.target.closest('[data-keep-open]')) return;
+  closePopover();
+}, true);
+pop.addEventListener('click', function(e){
+  var b = e.target.closest('[data-val]');
+  if (!b) return;
+  if (popHandler) popHandler(b.getAttribute('data-val'), b);
+});
+pop.addEventListener('change', function(e){
+  if (e.target.id === 'popDate' && popHandler){
+    popHandler('pick', e.target);
+  }
+});
+
+/* ============ 提示条 ============ */
+var toastEl = $('#toast'), toastMsg = $('#toastMsg'), toastBtn = $('#toastBtn'), toastTimer = null;
+function toast(msg, action){
+  toastMsg.textContent = msg;
+  if (action){
+    toastBtn.style.display = '';
+    toastBtn.textContent = action.label;
+    toastBtn.onclick = function(){ hideToast(); action.fn(); };
+  } else {
+    toastBtn.style.display = 'none';
+    toastBtn.onclick = null;
+  }
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(hideToast, action ? 6000 : 2400);
+}
+function hideToast(){ toastEl.classList.remove('show'); }
+
+/* ============ 计时器 ============ */
+var timer = { mode:'focus', total:FO, remaining:FO, endAt:0, running:false, paused:false, taskId:'' };
+var tickId = null;
+
+function timerStart(){
+  if (timer.running) return;
+  if (timer.remaining <= 0) timer.remaining = timer.total;
+  timer.endAt = Date.now() + timer.remaining * 1000;
+  timer.running = true;
+  timer.paused = false;
+  ensureTick();
+  updateTimerUI();
+}
+function timerPause(){
+  if (!timer.running) return;
+  timer.remaining = Math.max(0, Math.round((timer.endAt - Date.now()) / 1000));
+  timer.running = false;
+  timer.paused = true;
+  stopTick();
+  updateTimerUI();
+}
+function timerReset(){
+  timer.running = false; timer.paused = false; timer.remaining = timer.total; stopTick(); updateTimerUI();
+}
+function ensureTick(){
+  if (tickId) return;
+  tickId = setInterval(function(){
+    if (!timer.running){ stopTick(); return; }
+    var left = Math.max(0, Math.ceil((timer.endAt - Date.now()) / 1000));
+    if (left <= 0){ timer.remaining = 0; finishPhase(); }
+    else { timer.remaining = left; paintDigits(); }
+  }, 200);
+}
+function stopTick(){ if (tickId){ clearInterval(tickId); tickId = null; } }
+
+function setPhase(mode){
+  timer.mode = mode;
+  timer.total = mode === 'focus' ? FO : BR;
+  timer.remaining = timer.total;
+  timer.running = false;
+  timer.paused = false;
+  timer.endAt = 0;
+  stopTick();
+}
+function finishPhase(){
+  stopTick();
+  if (timer.mode === 'focus'){
+    var t = todayKey();
+    var s = state.sessions[t] || { pomodoros:0, seconds:0 };
+    s.pomodoros += 1;
+    s.seconds += timer.total;
+    state.sessions[t] = s;
+    var task = taskById(timer.taskId);
+    if (task) task.focusSec = (task.focusSec || 0) + timer.total;
+    save();
+    setPhase('break');
+    renderRail();
+    toast('专注完成 · 今天第 ' + s.pomodoros + ' 个番茄,休息 5 分钟');
+  } else {
+    setPhase('focus');
+    renderRail();
+    toast('休息结束,可以继续了');
+  }
+  updateTimerUI();
+}
+function skipPhase(){
+  if (timer.mode === 'focus'){ setPhase('break'); toast('已跳过本次专注'); }
+  else { setPhase('focus'); toast('已跳过休息'); }
+  renderRail(); updateTimerUI();
+}
+function paintDigits(){
+  var d = $('#tDigits');
+  d.textContent = fmtClock(timer.remaining);
+  d.classList.toggle('break-mode', timer.mode === 'break');
+  document.title = timer.running ? fmtClock(timer.remaining) + ' · 工作台' : '工作台';
+}
+function updateTimerUI(){
+  paintDigits();
+  $('#tMode').textContent = timer.mode === 'focus' ? '专注 · 25 分钟' : '休息 · 5 分钟';
+  var btn = $('#tBtn');
+  btn.textContent = timer.running ? '暂停' : (timer.paused ? '继续' : '开始');
+  btn.classList.toggle('primary', true);
+  var sel = $('#tTask');
+  if (sel) sel.disabled = timer.running || timer.mode === 'break';
+}
+
+/* ============ 渲染:侧栏 ============ */
+function renderSidebar(){
+  var t = todayKey(), ws = startOfWeek(t), we = addDays(ws, 6);
+  var c = { today:0, week:0, inbox:0, done:0 };
+  state.tasks.forEach(function(x){
+    if (x.done){ c.done++; return; }
+    if (!x.date) c.inbox++;
+    else if (x.date === t) c.today++;
+    else if (x.date >= ws && x.date <= we) c.week++;
+  });
+  $('#c-today').textContent = c.today || '';
+  $('#c-week').textContent = c.week || '';
+  $('#c-inbox').textContent = c.inbox || '';
+  $('#c-done').textContent = c.done || '';
+
+  document.querySelectorAll('.nav-item[data-view]').forEach(function(b){
+    var v = b.getAttribute('data-view');
+    b.classList.toggle('on', state.ui.view === v);
+  });
+
+  var html = '';
+  state.projects.forEach(function(p){
+    var n = state.tasks.filter(function(x){ return x.projectId === p.id && !x.done; }).length;
+    var on = state.ui.view === 'project' && state.ui.projectId === p.id;
+    html += '<button class="nav-item proj' + (on ? ' on' : '') + '" data-project="' + p.id + '">' +
+              '<span class="dot" style="background:' + p.color + '"></span>' +
+              '<span class="nm">' + esc(p.name) + '</span>' +
+              '<span class="count">' + (n || '') + '</span>' +
+              '<span class="rm" data-rm="' + p.id + '" title="删除项目">×</span>' +
+            '</button>';
+  });
+  if (!state.projects.length){
+    html = '<div style="padding:4px 10px;font-size:12px;color:var(--ink3)">还没有项目</div>';
+  }
+  $('#projList').innerHTML = html;
+}
+
+/* ============ 渲染:主区 ============ */
+function sortOpen(items){
+  return items.slice().sort(function(a, b){
+    if (a.priority !== b.priority) return a.priority - b.priority;
+    return (a.createdAt || 0) - (b.createdAt || 0);
+  });
+}
+function sortDone(items){
+  return items.slice().sort(function(a, b){ return (b.doneAt || 0) - (a.doneAt || 0); });
+}
+
+function currentView(){ return state.ui.view; }
+
+function buildGroups(){
+  var v = currentView(), t = todayKey();
+  var groups = [];
+
+  if (v === 'today'){
+    var list = state.tasks.filter(function(x){ return x.date === t; });
+    var open = sortOpen(list.filter(function(x){ return !x.done; }));
+    var done = sortDone(list.filter(function(x){ return x.done; }));
+    if (open.length) groups.push({ label:'待办', tasks:open });
+    if (done.length) groups.push({ label:'已完成', tasks:done, muted:true });
+  }
+  else if (v === 'week'){
+    var ws = addDays(startOfWeek(t), weekOffset * 7);
+    var days = [];
+    for (var i = 0; i < 7; i++) days.push(addDays(ws, i));
+    days.forEach(function(d){
+      var arr = state.tasks.filter(function(x){ return x.date === d; });
+      if (weekOffset === 0 && d < t && !arr.length) return; // 本周已过去且没任务的日子不占位置
+      var o = sortOpen(arr.filter(function(x){ return !x.done; }));
+      var dn = sortDone(arr.filter(function(x){ return x.done; }));
+      var rel = (d === t || d === addDays(t, 1) || d === addDays(t, 2)) ? dayLabel(d) + ' · ' : '';
+      groups.push({
+        label: rel + weekdayOf(d) + ' · ' + mdLabel(d),
+        tasks: o.concat(dn),
+        date: d
+      });
+    });
+  }
+  else if (v === 'inbox'){
+    var und = state.tasks.filter(function(x){ return !x.date; });
+    var o = sortOpen(und.filter(function(x){ return !x.done; }));
+    var dn = sortDone(und.filter(function(x){ return x.done; }));
+    if (o.length) groups.push({ label:'未排期', tasks:o });
+    if (dn.length) groups.push({ label:'已完成', tasks:dn, muted:true });
+  }
+  else if (v === 'done'){
+    var all = sortDone(state.tasks.filter(function(x){ return x.done; })).slice(0, 120);
+    var byDate = {};
+    all.forEach(function(x){
+      var k = x.doneAt ? ymd(new Date(x.doneAt)) : 'unknown';
+      (byDate[k] = byDate[k] || []).push(x);
+    });
+    Object.keys(byDate).sort().reverse().forEach(function(k){
+      groups.push({ label: k === 'unknown' ? '更早' : dayLabel(k), tasks: byDate[k], muted:true });
+    });
+  }
+  else if (v === 'project'){
+    var pid = state.ui.projectId;
+    var arr2 = state.tasks.filter(function(x){ return x.projectId === pid; });
+    var dated = arr2.filter(function(x){ return !!x.date; });
+    var byD = {};
+    dated.forEach(function(x){ (byD[x.date] = byD[x.date] || []).push(x); });
+    Object.keys(byD).sort().forEach(function(d){
+      var list2 = byD[d];
+      var o2 = sortOpen(list2.filter(function(x){ return !x.done; }));
+      var d2 = sortDone(list2.filter(function(x){ return x.done; }));
+      groups.push({ label: dateGroupLabel(d), tasks: o2.concat(d2), date:d });
+    });
+    var noDate = arr2.filter(function(x){ return !x.date; });
+    if (noDate.length){
+      groups.push({
+        label:'未排期',
+        tasks: sortOpen(noDate.filter(function(x){ return !x.done; }))
+                 .concat(sortDone(noDate.filter(function(x){ return x.done; })))
+      });
+    }
+  }
+  return groups;
+}
+
+function rowHTML(x){
+  var v = currentView();
+  var chips = '';
+  if (x.rolled && !x.done) chips += '<span class="chip over">延期</span>';
+  if (v !== 'project'){
+    var p = x.projectId ? projById(x.projectId) : null;
+    if (p){
+      chips += '<button class="chip proj" data-act="proj" title="点击归入其他项目">' +
+                 '<i style="background:' + p.color + '"></i>' + esc(p.name) + '</button>';
+    } else {
+      chips += '<button class="chip proj empty-holder" data-act="proj" title="归入项目">＋ 项目</button>';
+    }
+  }
+  if (x.date){
+    var fade = (v === 'today' || v === 'week');
+    chips += '<button class="chip date' + (fade ? ' fade' : '') + '" data-act="date" title="修改日期">' +
+               dayLabel(x.date) + '</button>';
+  } else if (!x.done && (v === 'inbox' || v === 'project')){
+    chips += '<button class="chip date fade" data-act="date" title="给这件事安排日期">＋ 日期</button>';
+  }
+  return '<div class="task' + (x.done ? ' done' : '') + '" data-id="' + x.id + '">' +
+      '<button class="prio" data-act="prio" title="优先级:' + PRIO_NAME[x.priority] + '(点击切换)">' +
+        '<i style="background:' + PRIO[x.priority] + '"></i></button>' +
+      '<button class="check" data-act="toggle" title="' + (x.done ? '标记为未完成' : '标记为已完成') + '">' +
+        '<svg width="10" height="8" viewBox="0 0 10 8" fill="none">' +
+          '<path d="M1 4.2L3.6 6.8L9 1.2" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '</svg>' +
+      '</button>' +
+      '<div class="t-title" title="双击编辑">' + esc(x.title) + '</div>' +
+      '<div class="t-meta">' + chips +
+        '<button class="del" data-act="del" title="删除">×</button>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderMain(){
+  var v = currentView(), t = todayKey();
+  var title = '今天', sub = '';
+  var addForm = $('#addForm'), addInput = $('#addInput');
+
+  if (v === 'today'){
+    var list = state.tasks.filter(function(x){ return x.date === t; });
+    var doneN = list.filter(function(x){ return x.done; }).length;
+    title = '今天';
+    sub = mdLabel(t) + ' · ' + weekdayOf(t) + ' · 共 ' + list.length + ' 件,已完成 ' + doneN + ' 件';
+    addInput.placeholder = '添加今天要做的事,回车确认';
+  } else if (v === 'week'){
+    var ws = addDays(startOfWeek(t), weekOffset * 7);
+    var we = addDays(ws, 6);
+    var wkCount = state.tasks.filter(function(x){ return x.date && x.date >= ws && x.date <= we; }).length;
+    title = weekOffset === 0 ? '本周'
+          : (weekOffset === 1 ? '下周'
+          : (weekOffset === -1 ? '上周'
+          : mdLabel(ws) + ' – ' + mdLabel(we)));
+    sub = mdLabel(ws) + ' – ' + mdLabel(we) + (wkCount ? ' · 共 ' + wkCount + ' 件' : '');
+    addInput.placeholder = '添加到今天 · 要安排到别的天,用下面每天的「＋」';
+  } else if (v === 'inbox'){
+    var n = state.tasks.filter(function(x){ return !x.date && !x.done; }).length;
+    title = '收件箱';
+    sub = n ? n + ' 件事还没安排日期' : '还没安排日期的事都会先放这里';
+    addInput.placeholder = '收集想法,回车加入收件箱';
+  } else if (v === 'done'){
+    var dn = state.tasks.filter(function(x){ return x.done; }).length;
+    title = '已完成';
+    sub = '累计完成 ' + dn + ' 件';
+  } else if (v === 'project'){
+    var p = projById(state.ui.projectId);
+    if (!p){ state.ui.view = 'today'; state.ui.projectId = null; return renderMain(); }
+    var arr = state.tasks.filter(function(x){ return x.projectId === p.id; });
+    title = p.name;
+    sub = arr.filter(function(x){ return !x.done; }).length + ' 件未完成 · 共 ' + arr.length + ' 件';
+    addInput.placeholder = '添加到「' + p.name + '」,回车确认';
+  }
+
+  $('#viewTitle').textContent = title;
+  $('#viewSub').textContent = sub;
+
+  var nav = $('#weekNav');
+  nav.style.display = (v === 'week') ? 'flex' : 'none';
+  nav.querySelector('[data-week="0"]').classList.toggle('on', weekOffset === 0);
+
+  var hideForm = (v === 'done') || (v === 'week' && weekOffset !== 0);
+  addForm.style.display = hideForm ? 'none' : 'flex';
+
+  var groups = buildGroups();
+  var html = '';
+
+  if (!groups.length){
+    var hint = '在上面的输入框里写下第一件事,回车就能加进来。';
+    if (v === 'done') hint = '勾选完成的任务会出现在这里。';
+    if (v === 'inbox') hint = '还没有随手记下的东西。';
+    if (v === 'week') hint = '这周还没有安排任务。';
+    var em = { today:'今天还没有安排', week:'本周还是空的', inbox:'收件箱是空的', done:'还没有完成的任务', project:'这个项目还没有任务' }[v] || '这里还是空的';
+    html = '<div class="empty"><div class="t">' + em + '</div><div class="s">' + hint + '</div></div>';
+  } else {
+    var curPid = (v === 'project' && state.ui.projectId) ? state.ui.projectId : '';
+    groups.forEach(function(g){
+      html += '<div class="group-head"><span>' + esc(g.label) + '</span>' +
+              (g.tasks.length ? '<span class="n">' + g.tasks.length + '</span>' : '') + '</div>';
+      g.tasks.forEach(function(x){ html += rowHTML(x); });
+      if (g.date){
+        html += '<button class="day-add" data-add-day="' + g.date + '" data-add-proj="' + curPid + '">' +
+                  '<b>＋</b> 添加任务' +
+                '</button>';
+      }
+    });
+  }
+  $('#taskList').innerHTML = html;
+}
+
+/* ============ 渲染:右栏 ============ */
+function renderRail(){
+  var t = todayKey();
+  var d = parseKey(t);
+  $('#railDate').innerHTML = mdLabel(t) + '<em>' + weekdayOf(t) + '</em>';
+
+  var list = state.tasks.filter(function(x){ return x.date === t; });
+  var doneN = list.filter(function(x){ return x.done; }).length;
+  var total = list.length;
+  var pct = total ? Math.round(doneN / total * 100) : 0;
+  $('#railBar').style.width = pct + '%';
+  $('#railRatio').textContent = doneN + '/' + total;
+  $('#railLeft').textContent = total === 0 ? '今天还没有任务' : (doneN === total ? '今天的都做完了' : '还剩 ' + (total - doneN) + ' 件');
+
+  var s = state.sessions[t] || { pomodoros:0, seconds:0 };
+  var wkDone = state.tasks.filter(function(x){
+    if (!x.done || !x.doneAt) return false;
+    var ws = startOfWeek(t);
+    return ymd(new Date(x.doneAt)) >= ws && ymd(new Date(x.doneAt)) <= addDays(ws, 6);
+  }).length;
+  $('#railNote').textContent = '本周已完成 ' + wkDone + ' 件';
+
+  var sel = $('#tTask');
+  var opts = '<option value="">不关联任务</option>';
+  var cand = sortOpen(openToday());
+  cand.forEach(function(x){
+    opts += '<option value="' + x.id + '">' + esc(x.title.length > 26 ? x.title.slice(0, 26) + '…' : x.title) + '</option>';
+  });
+  sel.innerHTML = opts;
+  if (timer.taskId && !taskById(timer.taskId)) timer.taskId = '';
+  sel.value = timer.taskId || '';
+
+  $('#tStat').textContent = '今天 ' + s.pomodoros + ' 个番茄 · ' + Math.round(s.seconds / 60) + ' 分钟专注';
+  updateTimerUI();
+}
+
+/* ============ 渲染总入口 ============ */
+function render(){
+  showWarn();
+  renderSidebar();
+  renderMain();
+  renderRail();
+  renderMobileNav();
+  setSyncUI(MODE !== 'offline' && !dirty);
+}
+
+function renderMobileNav(){
+  var sel = $('#mView');
+  if (!sel) return;
+  var h = '<option value="today">今天</option>' +
+          '<option value="week">本周</option>' +
+          '<option value="inbox">收件箱</option>' +
+          '<option value="done">已完成</option>';
+  if (state.projects.length){
+    h += '<optgroup label="项目">';
+    state.projects.forEach(function(p){
+      h += '<option value="p:' + p.id + '">' + esc(p.name) + '</option>';
+    });
+    h += '</optgroup>';
+  }
+  sel.innerHTML = h;
+  sel.value = (state.ui.view === 'project' && state.ui.projectId)
+    ? 'p:' + state.ui.projectId
+    : state.ui.view;
+}
+
+/* ============ 交互:主区 ============ */
+$('#taskList').addEventListener('click', function(e){
+  var addBtn = e.target.closest('[data-add-day]');
+  if (addBtn){
+    openDayAdd(addBtn.getAttribute('data-add-day'), addBtn.getAttribute('data-add-proj'));
+    return;
+  }
+  var actEl = e.target.closest('[data-act]');
+  if (!actEl) return;
+  var row = actEl.closest('[data-id]');
+  if (!row) return;
+  var task = taskById(row.getAttribute('data-id'));
+  if (!task) return;
+  var act = actEl.getAttribute('data-act');
+
+  if (act === 'toggle'){
+    task.done = !task.done;
+    task.doneAt = task.done ? Date.now() : null;
+    if (task.done) task.rolled = false;
+    save(); render();
+  } else if (act === 'prio'){
+    task.priority = task.priority === 1 ? 2 : (task.priority === 2 ? 3 : 1);
+    save(); render();
+  } else if (act === 'del'){
+    var i = state.tasks.indexOf(task);
+    state.tasks.splice(i, 1);
+    save(); render();
+    toast('已删除「' + task.title + '」', {
+      label:'撤销',
+      fn: function(){ state.tasks.splice(i, 0, task); save(); render(); }
+    });
+  } else if (act === 'date'){
+    openDatePicker(actEl, task);
+  } else if (act === 'proj'){
+    openProjectPicker(actEl, task);
+  }
+});
+
+function openProjectPicker(anchor, task){
+  var html = '<div class="pl">归入项目</div>';
+  state.projects.forEach(function(p){
+    html += '<button data-val="p:' + p.id + '"><span class="pdot" style="background:' + p.color + '"></span>' + esc(p.name) + '</button>';
+  });
+  if (state.projects.length) html += '<div class="sep"></div>';
+  html += '<button data-val="none">无项目</button>';
+  openPopover(anchor, html, function(val){
+    if (val === 'none') task.projectId = null;
+    else if (val.indexOf('p:') === 0) task.projectId = val.slice(2);
+    closePopover(); save(); render();
+  });
+}
+
+function openDayAdd(dateKey, pid){
+  render();
+  var btn = document.querySelector('[data-add-day="' + dateKey + '"]');
+  if (!btn) return;
+  var input = document.createElement('input');
+  input.className = 'inline-add';
+  input.placeholder = '回车添加 · Esc 取消';
+  input.maxLength = 200;
+  btn.parentNode.replaceChild(input, btn);
+  input.focus();
+  var fin = false;
+  function close(){
+    if (fin) return;
+    fin = true;
+    render();
+  }
+  input.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter'){
+      ev.preventDefault();
+      var val = input.value.trim();
+      if (!val){ close(); return; }
+      fin = true;
+      addTaskTo(val, dateKey, pid || null);
+      openDayAdd(dateKey, pid);
+    } else if (ev.key === 'Escape'){
+      ev.preventDefault();
+      close();
+    }
+  });
+  input.addEventListener('blur', function(){
+    if (fin) return;
+    fin = true;
+    var val = input.value.trim();
+    if (val) addTaskTo(val, dateKey, pid || null);
+    render();
+  });
+}
+
+function openDatePicker(anchor, task){
+  var t = todayKey();
+  var html = '<div class="pl">调整日期</div>' +
+    '<button data-val="today">今天</button>' +
+    '<button data-val="tomorrow">明天</button>' +
+    '<button data-val="nextmon">下周一</button>' +
+    '<button data-val="nextweek">下周同一天</button>' +
+    '<div class="sep"></div>' +
+    '<div class="pl">任意日期</div>' +
+    '<input type="date" id="popDate" value="' + (task.date || t) + '">' +
+    '<div class="sep"></div>' +
+    '<button data-val="clear">清除日期</button>';
+  openPopover(anchor, html, function(val, el){
+    if (val === 'today') task.date = t;
+    else if (val === 'tomorrow') task.date = addDays(t, 1);
+    else if (val === 'nextmon') task.date = addDays(startOfWeek(t), 7);
+    else if (val === 'nextweek') task.date = addDays(t, 7);
+    else if (val === 'clear') task.date = null;
+    else if (val === 'pick'){ task.date = el.value || null; }
+    if (task.date) task.rolled = false;
+    closePopover(); save(); render();
+  });
+}
+
+$('#taskList').addEventListener('dblclick', function(e){
+  var el = e.target.closest('.t-title');
+  if (!el) return;
+  var row = el.closest('[data-id]');
+  if (!row) return;
+  var task = taskById(row.getAttribute('data-id'));
+  if (!task) return;
+  var input = document.createElement('input');
+  input.className = 'inline-edit';
+  input.value = task.title;
+  input.maxLength = 200;
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+  var finished = false;
+  function commit(ok){
+    if (finished) return;
+    finished = true;
+    var val = input.value.trim();
+    if (ok && val){ task.title = val; save(); }
+    render();
+  }
+  input.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter'){ ev.preventDefault(); commit(true); }
+    else if (ev.key === 'Escape'){ ev.preventDefault(); commit(false); }
+  });
+  input.addEventListener('blur', function(){ commit(true); });
+});
+
+function addTaskTo(title, date, pid){
+  state.tasks.push({
+    id: uid(), title: title, projectId: pid || null, date: date || null, priority: 3,
+    done: false, doneAt: null, createdAt: Date.now(),
+    rolled: false, rollCount: 0, focusSec: 0
+  });
+  save();
+}
+
+$('#addForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var input = $('#addInput');
+  var val = input.value.trim();
+  if (!val) return;
+  var v = currentView();
+  var date = todayKey(), pid = null;
+  if (v === 'inbox') date = null;
+  if (v === 'project') pid = state.ui.projectId;
+  addTaskTo(val, date, pid);
+  input.value = '';
+  render();
+  input.focus();
+});
+
+/* ============ 交互:侧栏 ============ */
+document.querySelectorAll('.nav-item[data-view]').forEach(function(b){
+  b.addEventListener('click', function(){
+    state.ui.view = b.getAttribute('data-view');
+    state.ui.projectId = null;
+    if (state.ui.view === 'week') weekOffset = 0;
+    save(); render();
+  });
+});
+
+$('#weekNav').addEventListener('click', function(e){
+  var b = e.target.closest('[data-week]');
+  if (!b) return;
+  var d = parseInt(b.getAttribute('data-week'), 10);
+  weekOffset = (d === 0) ? 0 : Math.max(-26, Math.min(52, weekOffset + d));
+  render();
+});
+
+$('#projList').addEventListener('click', function(e){
+  var rm = e.target.closest('[data-rm]');
+  if (rm){
+    e.stopPropagation();
+    var pid = rm.getAttribute('data-rm');
+    var p = projById(pid);
+    var n = state.tasks.filter(function(x){ return x.projectId === pid; }).length;
+    if (!confirm('删除项目「' + p.name + '」?' + (n ? '\n其中 ' + n + ' 个任务会变成「无项目」,不会被删除。' : ''))) return;
+    state.projects = state.projects.filter(function(x){ return x.id !== pid; });
+    state.tasks.forEach(function(x){ if (x.projectId === pid) x.projectId = null; });
+    if (state.ui.view === 'project' && state.ui.projectId === pid){
+      state.ui.view = 'today'; state.ui.projectId = null;
+    }
+    save(); render();
+    return;
+  }
+  var b = e.target.closest('[data-project]');
+  if (!b) return;
+  state.ui.view = 'project';
+  state.ui.projectId = b.getAttribute('data-project');
+  save(); render();
+});
+
+$('#projList').addEventListener('dblclick', function(e){
+  var nm = e.target.closest('.nm');
+  if (!nm) return;
+  var btn = nm.closest('[data-project]');
+  var p = projById(btn.getAttribute('data-project'));
+  if (!p) return;
+  var input = document.createElement('input');
+  input.className = 'proj-input';
+  input.value = p.name;
+  input.maxLength = 20;
+  nm.replaceWith(input);
+  input.focus(); input.select();
+  var fin = false;
+  function done(ok){
+    if (fin){ return; }
+    fin = true;
+    var val = input.value.trim();
+    if (ok && val) p.name = val;
+    save(); render();
+  }
+  input.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter'){ ev.preventDefault(); done(true); }
+    else if (ev.key === 'Escape'){ ev.preventDefault(); done(false); }
+  });
+  input.addEventListener('blur', function(){ done(true); });
+});
+
+$('#btnAddProj').addEventListener('click', function(){
+  if ($('#newProjInput')) { $('#newProjInput').focus(); return; }
+  var input = document.createElement('input');
+  input.className = 'proj-input';
+  input.id = 'newProjInput';
+  input.placeholder = '项目名称,回车创建';
+  input.maxLength = 20;
+  $('#projList').appendChild(input);
+  input.focus();
+  var fin = false;
+  function finish(ok){
+    if (fin) return;
+    fin = true;
+    var val = input.value.trim();
+    if (ok && val){
+      state.projects.push({ id: uid(), name: val, color: P_CLR[state.projects.length % P_CLR.length] });
+      save();
+    }
+    render();
+  }
+  input.addEventListener('keydown', function(ev){
+    if (ev.key === 'Enter'){ ev.preventDefault(); finish(true); }
+    else if (ev.key === 'Escape'){ ev.preventDefault(); finish(false); }
+  });
+  input.addEventListener('blur', function(){ finish(true); });
+});
+
+/* ============ 交互:计时器 ============ */
+$('#tBtn').addEventListener('click', function(){
+  if (timer.running) timerPause(); else timerStart();
+});
+$('#tReset').addEventListener('click', function(){ timerReset(); });
+$('#tSkip').addEventListener('click', function(){ skipPhase(); });
+$('#tTask').addEventListener('change', function(e){
+  timer.taskId = e.target.value || '';
+});
+
+/* ============ 交互:设置与备份 ============ */
+function openSettings(anchor){
+  var html = '<div class="pl">同步</div>' +
+    '<button data-val="cloud">云同步设置<span style="float:right;color:var(--ink3);font-size:11px">' + syncShort() + '</span></button>' +
+    '<div class="sep"></div>' +
+    '<div class="pl">数据</div>' +
+    '<button data-val="export">导出备份(JSON)</button>' +
+    '<button data-val="import">导入备份</button>' +
+    '<div class="sep"></div>' +
+    '<button data-val="reseed">恢复示例数据</button>' +
+    '<button data-val="clear" class="danger">清空所有数据</button>';
+  openPopover(anchor, html, function(val){
+    closePopover();
+    if (val === 'export') doExport();
+    else if (val === 'import') $('#importFile').click();
+    else if (val === 'cloud') openCloudModal();
+    else if (val === 'reseed'){
+      if (!confirm('用示例数据替换当前所有内容?现有数据会丢失。')) return;
+      state = seedState(); save(); render();
+      toast('已恢复示例数据');
+    } else if (val === 'clear'){
+      if (!confirm('清空所有任务和项目?此操作不可撤销。')) return;
+      state = { v:1, projects:[], tasks:[], sessions:{}, ui:{ view:'today', projectId:null } };
+      save(); render();
+      toast('已清空');
+    }
+  });
+}
+function syncShort(){
+  if (MODE === 'cloud') return cloud.provider === 'gist' ? 'Gist' : (cloud.provider === 'gitee' ? 'Gitee' : '自定义');
+  if (MODE === 'lan') return '局域网';
+  return '未开启';
+}
+
+/* ---------- 云同步设置弹窗 ---------- */
+var modalMask = $('#modalMask'), modalBox = $('#modalBox');
+function closeModal(){ modalMask.classList.remove('show'); modalBox.innerHTML = ''; }
+modalMask.addEventListener('click', function(e){ if (e.target === modalMask) closeModal(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModal(); });
+
+function openCloudModal(){
+  var p = cloud.provider || '';
+  var html =
+    '<h2>云同步</h2>' +
+    '<p class="hint">开启后数据存在云端,<b>电脑关机也能用手机查看和修改</b>。' +
+    '需要一个免费账号的令牌(下面有步骤)。令牌只存在你自己的设备上,不会上传。</p>' +
+    '<div class="field"><label>存到哪里</label>' +
+      '<div class="radio-row" id="provRow">' +
+        '<button data-prov="gist" class="' + (p === 'gist' ? 'on' : '') + '"><b>GitHub Gist</b>推荐,免费</button>' +
+        '<button data-prov="gitee" class="' + (p === 'gitee' ? 'on' : '') + '"><b>Gitee 代码片段</b>国内快</button>' +
+        '<button data-prov="http" class="' + (p === 'http' ? 'on' : '') + '"><b>自建接口</b>自己的服务器</button>' +
+      '</div>' +
+    '</div>' +
+    '<div id="provFields"></div>' +
+    '<div class="status" id="cloudStatus" style="display:none"></div>' +
+    '<div class="modal-actions">' +
+      '<button class="btn" data-act="cancel">关闭</button>' +
+      '<button class="btn" data-act="off">关闭云同步</button>' +
+      '<button class="btn primary" data-act="save">保存并同步</button>' +
+    '</div>';
+  modalBox.innerHTML = html;
+  modalMask.classList.add('show');
+  renderProvFields();
+
+  modalBox.querySelector('#provRow').addEventListener('click', function(e){
+    var b = e.target.closest('[data-prov]');
+    if (!b) return;
+    cloud.provider = b.getAttribute('data-prov');
+    modalBox.querySelectorAll('#provRow button').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    renderProvFields();
+  });
+
+  modalBox.addEventListener('click', function(e){
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act');
+    if (act === 'cancel') closeModal();
+    else if (act === 'off'){ turnOffCloud(); }
+    else if (act === 'save'){ applyCloud(); }
+  });
+}
+
+function renderProvFields(){
+  var box = modalBox.querySelector('#provFields');
+  var p = cloud.provider;
+  if (!p){ box.innerHTML = '<div class="status">先选一个存放位置。</div>'; return; }
+  if (p === 'http'){
+    box.innerHTML =
+      '<div class="field"><label>接口地址(GET 读取 / PUT 写入,JSON)</label>' +
+        '<input type="text" id="fUrl" placeholder="https://example.com/workbench.json" value="' + esc(cloud.url || '') + '"></div>' +
+      '<div class="field"><label>令牌(可选,作为 Authorization: Bearer)</label>' +
+        '<input type="password" id="fToken" value="' + esc(cloud.token || '') + '"></div>' +
+      '<div class="tip" style="font-size:11.5px;color:var(--ink3);line-height:1.7">' +
+        '需要一个能收发 JSON 的地址。若你有自己的服务器或 Cloudflare Worker,' +
+        '把地址填这里即可。' +
+      '</div>';
+    return;
+  }
+  var isGist = p === 'gist';
+  var tokenUrl = isGist ? 'https://github.com/settings/tokens/new?scopes=gist&amp;description=workbench' : 'https://gitee.com/profile/personal_access_tokens';
+  var scopeTip = isGist ? '只需要勾选 <b>gist</b> 这一项权限。' : '只需要 <b>gists</b> 权限。';
+  box.innerHTML =
+    '<div class="field"><label>访问令牌</label>' +
+      '<input type="password" id="fToken" placeholder="粘贴令牌" value="' + esc(cloud.token || '') + '">' +
+      '<div class="tip">第 1 步:打开 <a href="' + tokenUrl + '" target="_blank" rel="noopener">创建令牌</a>;' +
+      scopeTip + '第 2 步:复制生成的令牌粘到上面。<b>令牌只存在你的设备上,不会同步出去。</b>' +
+      '注意:数据文件不公开列出,但拿到链接的人仍可查看,别把链接发出去。</div>' +
+    '</div>' +
+    '<div class="field"><label>数据位置' + (cloud.id ? '' : '(留空 = 首次创建)') + '</label>' +
+      '<input type="text" id="fId" placeholder="留空会自动新建一个" value="' + esc(cloud.id || '') + '">' +
+      '<div class="tip">' + (isGist ? '就是 Gist 网址最后那段字符串。' : '就是代码片段网址里的 ID。') +
+      '换新手机时,除了令牌,也要把这段填进来才接得上原来的数据。</div>' +
+    '</div>';
+}
+
+function setCloudStatus(msg, kind){
+  var el = modalBox.querySelector('#cloudStatus');
+  if (!el) return;
+  el.style.display = '';
+  el.className = 'status' + (kind ? ' ' + kind : '');
+  el.textContent = msg;
+}
+
+function applyCloud(){
+  var p = cloud.provider;
+  if (!p){ setCloudStatus('先选一个存放位置。', 'bad'); return; }
+  var tokEl = modalBox.querySelector('#fToken');
+  if (tokEl) cloud.token = tokEl.value.trim();
+  var idEl = modalBox.querySelector('#fId');
+  if (idEl) cloud.id = idEl.value.trim();
+  var urlEl = modalBox.querySelector('#fUrl');
+  if (urlEl) cloud.url = urlEl.value.trim();
+
+  if (p === 'http' && !cloud.url){ setCloudStatus('请填写接口地址。', 'bad'); return; }
+  if (p !== 'http' && !cloud.token){ setCloudStatus('请先填写访问令牌。', 'bad'); return; }
+
+  setCloudStatus('正在连接…');
+  backend = pickBackend();
+  backend.test().then(function(){
+    return backend.read().then(function(r){
+      if (r.env && r.env.state && Array.isArray(r.env.state.tasks)){
+        if (!confirm('云端已经有一份数据(' + r.env.state.tasks.length + ' 个任务)。\n\n点「确定」= 用云端的数据覆盖本机\n点「取消」= 用本机的数据覆盖云端')) return 'pull';
+        rev = r.rev;
+        state = normalize(r.env.state);
+        mirror();
+        return 'pulled';
+      }
+      return 'empty';
+    });
+  }).then(function(mode){
+    if (mode === 'pulled'){
+      saveCloud();
+      render();
+      setCloudStatus('已连接,已载入云端数据。', 'ok');
+      stopPoll(); pollTimer = null; startPollOnce();
+      setTimeout(function(){ closeModal(); toast('云同步已开启'); }, 700);
+      return;
+    }
+    // 推本机数据上去
+    rev = Math.max(rev, 1);
+    var env = { rev: rev, updatedAt: Date.now(), state: state };
+    return backend.write(env).then(function(r){
+      if (r && typeof r.rev === 'number') rev = r.rev;
+      saveCloud();
+      dirty = false;
+      setSyncUI(true);
+      startPollOnce();
+      if (cloud.provider !== 'http' && !cloud.id){
+        setCloudStatus('创建失败:没有拿到数据位置。', 'bad');
+        return;
+      }
+      setCloudStatus('已连接。本机数据已上传,以后换设备只填令牌' +
+        (cloud.id ? '和位置(' + cloud.id + ')' : '') + '就能接上。', 'ok');
+      stopPoll(); pollTimer = null; startPollOnce();
+      setTimeout(function(){ closeModal(); toast('云同步已开启'); }, 1600);
+    });
+  }).catch(function(err){
+    setCloudStatus('失败:' + (err && err.message || err) +
+      '\n如果是跨域或网络问题,换一个存放位置再试。', 'bad');
+  });
+}
+
+function turnOffCloud(){
+  if (!confirm('关闭云同步?\n本机数据会保留,但不再自动备份到云端。')) return;
+  cloud = { provider:'', token:'', id:'', url:'' };
+  saveCloud();
+  stopPoll();
+  backend = null;
+  MODE = SERVED ? 'lan' : 'offline';
+  if (MODE === 'lan'){ backend = LanBackend; startPollOnce(); }
+  setSyncUI(MODE !== 'offline');
+  closeModal();
+  toast('已关闭云同步');
+}
+
+$('#btnSettings').addEventListener('click', function(e){ openSettings(e.currentTarget); });
+$('#mSettings').addEventListener('click', function(e){ openSettings(e.currentTarget); });
+
+$('#mView').addEventListener('change', function(e){
+  var v = e.target.value;
+  if (v.indexOf('p:') === 0){
+    state.ui.view = 'project';
+    state.ui.projectId = v.slice(2);
+  } else {
+    state.ui.view = v;
+    state.ui.projectId = null;
+    if (v === 'week') weekOffset = 0;
+  }
+  save(); render();
+});
+
+function doExport(){
+  try{
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type:'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = '工作台备份-' + todayKey() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('备份已导出');
+  }catch(e){ toast('导出失败:' + e.message); }
+}
+
+$('#importFile').addEventListener('change', function(e){
+  var f = e.target.files && e.target.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      var s = JSON.parse(r.result);
+      if (!s || !Array.isArray(s.tasks) || !Array.isArray(s.projects)) throw new Error('文件格式不对');
+      s.sessions = s.sessions || {};
+      s.ui = s.ui || { view:'today', projectId:null };
+      if (!confirm('用备份覆盖当前数据?')) return;
+      state = s;
+      rollover();
+      save(); render();
+      toast('已导入 ' + s.tasks.length + ' 个任务');
+    }catch(err){ toast('导入失败:' + err.message); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+});
+
+/* ============ 启动 ============ */
+function finishSetup(s, needsPush){
+  state = normalize(s);
+  var changed = rollover();
+  mirror();
+  if (needsPush || changed){
+    state.updatedAt = Date.now();
+    dirty = true;
+    flush();
+  }
+  render();
+  startPollOnce();
+}
+
+function bootstrap(){
+  backend = pickBackend();
+
+  // 离线:直接用本机数据
+  if (!backend){
+    finishSetup(loadState() || seedState());
+    return;
+  }
+
+  // 有后端:先拉云端/服务端
+  backend.read().then(function(r){
+    if (r.env && r.env.state && Array.isArray(r.env.state.tasks)){
+      rev = r.rev || 0;
+      finishSetup(r.env.state);
+      return;
+    }
+    // 远端是空的:把本机已有的数据推上去,没有就推示例
+    var local = loadState();
+    rev = Math.max(rev, 0);
+    finishSetup(local || seedState(), true);
+  }).catch(function(){
+    backend = null;
+    MODE = 'offline';
+    finishSetup(loadState() || seedState());
+    setSyncUI(false);
+    toast('连不上存放位置,先按离线模式用'); 
+  });
+}
+
+bootstrap();
+
+var lastDay = todayKey();
+setInterval(function(){
+  var t = todayKey();
+  if (t === lastDay) return;
+  lastDay = t;
+  if (rollover()) save();
+  render();
+}, 30000);
+})();
+</script>
+
+
+</body></html>
